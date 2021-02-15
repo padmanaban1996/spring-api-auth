@@ -16,10 +16,10 @@ import com.smile.tech.model.Users;
 import com.smile.tech.repository.UsersRepository;
 
 @SpringBootApplication
-public class SpringwithAngularCrudApplication {
+public class SwipeCard_AuthenticationApp {
 
 	public static void main(String[] args) {
-		SpringApplication.run(SpringwithAngularCrudApplication.class, args);
+		SpringApplication.run(SwipeCard_AuthenticationApp.class, args);
 	}
 
 }

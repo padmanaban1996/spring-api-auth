@@ -1,12 +1,6 @@
 package com.smile.tech.controller;
 
-import java.net.http.HttpResponse;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -15,7 +9,7 @@ import java.util.stream.Collectors;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -23,8 +17,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -41,8 +33,6 @@ import com.smile.tech.payload.response.MessageResponse;
 import com.smile.tech.repository.RoleRepository;
 import com.smile.tech.security.JwtUtils;
 import com.smile.tech.service.UsersDetailImpl;
-
-import lombok.val;
 
 import com.smile.tech.repository.UsersRepository;
 
@@ -83,7 +73,7 @@ public class AuthController {
 				userDetails.getCreatedDate(), roles, jwt));
 	}
 
-	@PreAuthorize("hasRole('ROLE_MODERATOR') or hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasRole('ROLE_MANAGER') or hasRole('ROLE_ADMIN')")
 	@PostMapping("/user/signup")
 	public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
 
@@ -134,7 +124,7 @@ public class AuthController {
 		return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
 	}
 
-//	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	@PostMapping("/admin/signup")
 	public ResponseEntity<?> registerAdmin(@Valid @RequestBody SignupRequest signUpRequest) {
 
@@ -232,7 +222,6 @@ public class AuthController {
 //				}
 //			});
 //		}
-		String FORMAT = "yyyy-MM-dd HH:mm:ss";
 		LocalDateTime date = LocalDateTime.now();
 
 		user.setCreatedDate(date);
