@@ -23,13 +23,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.smile.tech.model.Attendence;
 import com.smile.tech.model.Users;
-
+import com.smile.tech.payload.response.MessageResponse;
 import com.smile.tech.service.AttendenceService;
 import com.smile.tech.service.UsersService;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
-@RequestMapping("/test")
+@RequestMapping("/api")
 public class UsersController {
 
 	@Autowired
@@ -73,7 +73,7 @@ public class UsersController {
 //		service.delete(users);
 //	}
 
-	@PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_MANAGER') or hasRole('ROLE_ADMIN')")
+//	@PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_MANAGER') or hasRole('ROLE_ADMIN')")
 	@PostMapping("/attend/{id}")
 	public ResponseEntity<?> userAttendenceEntry(@PathVariable String id) {
 		Users user = service.findById(id);
@@ -85,17 +85,18 @@ public class UsersController {
 	@GetMapping("/attend/{date}")
 	public List<Attendence> findAttendenceByDate(@PathVariable String date) {
 		List<Attendence> ls = AService.findAll();
-		return AService.findListByDate(ls,date);
+		return AService.findListByDate(ls, date);
 	}
 
 	@PreAuthorize("hasRole('ROLE_MANAGER') or hasRole('ROLE_ADMIN')")
 	@GetMapping("/attend/{week}/{year}")
-	public List<Attendence> findAttendenceByYearandWeek(@PathVariable("week") DayOfWeek week, @PathVariable("year") int year) {
+	public List<Attendence> findAttendenceByYearandWeek(@PathVariable("week") DayOfWeek week,
+			@PathVariable("year") int year) {
 		List<Attendence> ls = AService.findAll();
 		List<Attendence> list = new ArrayList<>();
 		for (int i = 0; i < ls.size(); i++) {
-			if (ls.get(i).getYear() == year) {
-				if (ls.get(i).getDayofWeek() == week)
+			if (ls.get(i).getStartTime().getYear() == year) {
+				if (ls.get(i).getStartTime().getDayOfWeek() == week)
 					list.add(ls.get(i));
 			}
 		}
@@ -108,18 +109,19 @@ public class UsersController {
 		List<Attendence> ls = AService.findAll();
 		return AService.findListByMonth(ls, month);
 	}
-	
+
 	@PreAuthorize("hasRole('ROLE_MANAGER') or hasRole('ROLE_ADMIN')")
 	@GetMapping("/absent/{month}")
-	public List<Attendence> findAbsentReport(@PathVariable int month){
-		List<Users> users=service.findAll();	
+	public List<Attendence> findAbsentReport(@PathVariable int month) {
+		List<Users> users = service.findAll();
 		return AService.findAbsentListByMonth(users, month);
 	}
-	
+
 	@PreAuthorize("hasRole('ROLE_MANAGER') or hasRole('ROLE_ADMIN')")
 	@GetMapping("/present/{month}")
-	public List<Attendence> findPresentReport(@PathVariable int month){
-		List<Users> users=service.findAll();	
+	public List<Attendence> findPresentReport(@PathVariable int month) {
+		List<Users> users = service.findAll();
 		return AService.findPresentListByMonth(users, month);
 	}
+
 }

@@ -53,10 +53,6 @@ public class AttendenceService {
 		return repository.findByUserID(id);
 	}
 
-	public List<Attendence> findUserByDate(String date) {
-		return repository.findByDate(date);
-	}
-
 	public ResponseEntity<?> attendenceRecord(Users user, List<Attendence> attendence) {
 
 		HttpHeaders headers = new HttpHeaders();
@@ -92,7 +88,7 @@ public class AttendenceService {
 	public List<Attendence> findListByMonth(List<Attendence> ls, int month) {
 		List<Attendence> list = new ArrayList<>();
 		for (int i = 0; i < ls.size(); i++) {
-			if (ls.get(i).getMonth() == month) {
+			if (ls.get(i).getStartTime().getMonthValue() == month) {
 				list.add(ls.get(i));
 			}
 		}
@@ -102,7 +98,7 @@ public class AttendenceService {
 	public List<Attendence> findListByDate(List<Attendence> ls, String date) {
 		List<Attendence> list = new ArrayList<>();
 		for (int i = 0; i < ls.size(); i++) {
-			if (ls.get(i).getDate().equals(date)) {
+			if (ls.get(i).getStartTime().toLocalDate().toString().equals(date)) {
 				list.add(ls.get(i));
 			}
 		}
@@ -112,40 +108,48 @@ public class AttendenceService {
 	public List<Attendence> findAbsentListByMonth(List<Users> users, int month) {
 		List<Attendence> ls = findAll();
 		List<Attendence> list = new ArrayList<>();
+
 		for (int i = 0; i < ls.size(); i++) {
-			if (ls.get(i).getMonth() == month) {
+			if (ls.get(i).getStartTime().getMonthValue() == month) {
 				list.add(ls.get(i));
 			}
 		}
 		List<Attendence> absent = new ArrayList<>();
-		for (int i = 0; i < users.size(); i++) {
-			for (int j = 0; j < list.size(); j++) {
-				if (!(users.get(i).getId().equals(list.get(j).getUserID()))) {
-					absent.add(list.get(j));
-				}	
+		for (int i = 0; i < list.size(); i++) {
+			boolean checks = false;
+			for (int j = 0; j < users.size(); j++) {
+				if (list.get(i).getUserID().equals(users.get(j).getId())) {
+					checks = true;
+				}
+			}
+			if (checks == false) {
+				absent.add(list.get(i));
 			}
 		}
-        return absent;
+		return absent;
 	}
-	
+
 	public List<Attendence> findPresentListByMonth(List<Users> users, int month) {
-		List<Attendence> ls = findAll();
-		List<Attendence> list = new ArrayList<>();
-		for (int i = 0; i < ls.size(); i++) {
-			if (ls.get(i).getMonth() == month) {
-				list.add(ls.get(i));
+		List<Attendence> lst = findAll();
+		List<Attendence> list1 = new ArrayList<>();
+		for (int i = 0; i < lst.size(); i++) {
+			if (lst.get(i).getStartTime().getMonthValue() == month) {
+				list1.add(lst.get(i));
 			}
 		}
 		List<Attendence> present = new ArrayList<>();
-		for (int i = 0; i < users.size(); i++) {
-			for (int j = 0; j < list.size(); j++) {
-				if (users.get(i).getId().equals(list.get(j).getUserID())) {
-					present.add(list.get(j));
-				}	
+		for (int i = 0; i < list1.size(); i++) {
+			boolean checks = false;
+			for (int j = 0; j < users.size(); j++) {
+				if (list1.get(i).getUserID().equals(users.get(j).getId())) {
+					checks = true;
+				}
+			}
+			if (checks == true) {
+				present.add(list1.get(i));
 			}
 		}
-        return present;
+		return present;
 	}
-
 
 }

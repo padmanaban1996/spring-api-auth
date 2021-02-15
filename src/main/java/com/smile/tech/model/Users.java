@@ -34,13 +34,26 @@ public class Users {
 
 	@DBRef
 	private Set<Role> roles;
-	
+		
+	public Users() {
+		
+	}
 
 	public Users(String username, String password) {
 		super();
 		this.username = username;
 		this.password = password;
 	}
+
+	public Users(String username,LocalDateTime createdDate,
+			String password,Set<Role> role) {
+		super();
+		this.username = username;
+		this.createdDate = createdDate;
+		this.password = password;
+		this.roles=role;
+	}
+
 
 	public String getId() {
 		return id;
