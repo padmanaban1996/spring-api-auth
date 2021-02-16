@@ -1,83 +1,84 @@
 package com.smile.tech.controller;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.Assert.assertEquals;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
-
 import org.junit.Before;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.smile.tech.model.Role;
 import com.smile.tech.model.Users;
 
-@RunWith(MockitoJUnitRunner.class)
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-@AutoConfigureMockMvc
+@SpringBootTest
+@RunWith(SpringRunner.class)
+@WebAppConfiguration
 public class AuthControllerTests {
 
-	private static final String ATT_ID = "8734823";
-	private static final String USER_ID = "7823728";
-	private static final String USER_NAME = "User2";
-	private static final String PASSWORD = "123456789";
-	static LocalDateTime ldt = LocalDateTime.now();
-	private static final LocalDateTime CREATEDDATE = ldt;
-	private static final Set<Role> ROLE = null;
+	MockMvc mockMvc;
 
 	@Autowired
-	private MockMvc mockMvc;
-	
+	WebApplicationContext context;
+
 	@Autowired
-	private WebApplicationContext context;
-	
-	@Autowired
-	private ObjectMapper mapper;
-	
+	ObjectMapper mapper;
+
 	@Before
+	@Test
 	public void setup() {
-		mockMvc=MockMvcBuilders.webAppContextSetup(context).apply(springSecurity()).build();
+		mockMvc = MockMvcBuilders.webAppContextSetup(context).apply(springSecurity()).build();
+
 	}
-	
-	@WithMockUser(username = "admin")
+
+	@WithMockUser(username = "admin", password = "123456789", roles = "ADMIN")
 	@Test
 	public void savePerson() throws Exception {
-        Role r=new Role();
-		r.setId("60238313a156a4082d124c6f");
-		r.setName("ROLE_ADMIN");
-		
-		Set<Role> role=new HashSet<>();
-		role.add(r);
-		
-		Users user=new Users();
-		//user.setId("602753e2ba5b6a619746e1d7");
-		user.setUsername(USER_NAME);
-		user.setPassword(PASSWORD);
-	//	user.setCreatedDate(CREATEDDATE);
-	//	user.setRoles(role);
+		Users user = new Users();
+		user.setUsername("user1");
+		user.setPassword("123456789");
+
 		String jsonreq = mapper.writeValueAsString(user);
-		
-		System.out.println("json value"+">>-->"+jsonreq);
-	    MvcResult resul=mockMvc.perform(post("/auth/user/signup").content(jsonreq)
-	    		      .contentType(MediaType.APPLICATION_JSON))
-	                 .andExpect(status().isOk()).andReturn();
-	    
-	assertEquals(200, resul.getResponse().getStatus());
+
+		MvcResult resul = mockMvc
+				.perform(post("/auth/user/signup").content(jsonreq).contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk()).andReturn();
+		assertEquals(200, resul.getResponse().getStatus());
 	}
+
+	@WithMockUser(username = "admin", password = "123456789", roles = "ADMIN")
+	@Test
+	public void getAllUsers() throws Exception {
+
+		MvcResult resul = mockMvc.perform(get("/api/all").contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk()).andReturn();
+		assertEquals(200, resul.getResponse().getStatus());
+	}
+
+	@Test
+	public void signinPerson() throws Exception {
+		Users user = new Users();
+		user.setUsername("user1");
+		user.setPassword("123456789");
+
+		String jsonreq = mapper.writeValueAsString(user);
+
+		MvcResult resul = mockMvc.perform(post("/auth/signin").content(jsonreq).contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk()).andReturn();
+		assertEquals(200, resul.getResponse().getStatus());
+	}
+
 }

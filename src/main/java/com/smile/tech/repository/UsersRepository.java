@@ -1,10 +1,7 @@
 package com.smile.tech.repository;
 
-import java.util.List;
 import java.util.Optional;
-
 import org.springframework.data.mongodb.repository.MongoRepository;
-
 import com.smile.tech.model.Users;
 
 public interface UsersRepository extends MongoRepository<Users, String> {
@@ -16,6 +13,5 @@ public interface UsersRepository extends MongoRepository<Users, String> {
 	public Users findByRoles(String roles);
 
 	public Users findByUsername(String username);
-
 
 }

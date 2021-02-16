@@ -3,8 +3,6 @@ package com.smile.tech.payload.response;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import com.smile.tech.model.Role;
-
 public class JwtResponse {
 
 	private String accessToken;

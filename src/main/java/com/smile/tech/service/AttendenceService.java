@@ -1,8 +1,10 @@
 package com.smile.tech.service;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -150,6 +152,29 @@ public class AttendenceService {
 			}
 		}
 		return present;
+	}
+
+	public List<Attendence> findLisByDayandYear(List<Attendence> ls, int week, int year) {
+
+		List<Attendence> list = new ArrayList<>();
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+		Calendar cal = Calendar.getInstance();
+		cal.set(Calendar.YEAR, year);
+		cal.set(Calendar.WEEK_OF_YEAR, week);
+		cal.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+		String weekdayofyear = simpleDateFormat.format(cal.getTime());
+
+		int i = 0, j = 0;
+		for (i = 0; i < 7; i++) {
+		   LocalDate dateIncrement = LocalDate.parse(weekdayofyear).plusDays(i);
+			for (j = 0; j < ls.size(); j++) {
+				if (ls.get(j).getStartTime().toLocalDate().equals(dateIncrement)) {
+					list.add(ls.get(j));
+				}
+			}
+			j = 0;
+		}
+		return list;
 	}
 
 }

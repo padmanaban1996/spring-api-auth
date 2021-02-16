@@ -1,8 +1,5 @@
 package com.smile.tech.controller;
 
-import java.time.DayOfWeek;
-
-import java.util.ArrayList;
 
 import java.util.List;
 
@@ -15,15 +12,13 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import org.springframework.web.bind.annotation.RestController;
 
 import com.smile.tech.model.Attendence;
 import com.smile.tech.model.Users;
-import com.smile.tech.payload.response.MessageResponse;
 import com.smile.tech.service.AttendenceService;
 import com.smile.tech.service.UsersService;
 
@@ -57,15 +52,6 @@ public class UsersController {
 	}
 
 //	@PreAuthorize("hasRole('ROLE_MANAGER') or hasRole('ROLE_ADMIN')")
-//	@PutMapping(value = "/{id}")
-//	public Users update(@PathVariable String id, @RequestBody Users userUpdate) {
-//		Users users = service.findById(id);
-//		users.setUsername(userUpdate.getUsername());
-//		users.setCreatedDate(userUpdate.getCreatedDate());
-//		return service.save(users);
-//	}
-
-//	@PreAuthorize("hasRole('ROLE_MANAGER') or hasRole('ROLE_ADMIN')")
 //	@DeleteMapping(value = "/{id}")
 //	@ResponseStatus(code = HttpStatus.ACCEPTED)
 //	public void deleteUser(@PathVariable String id) {
@@ -73,7 +59,7 @@ public class UsersController {
 //		service.delete(users);
 //	}
 
-//	@PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_MANAGER') or hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_MANAGER') or hasRole('ROLE_ADMIN')")
 	@PostMapping("/attend/{id}")
 	public ResponseEntity<?> userAttendenceEntry(@PathVariable String id) {
 		Users user = service.findById(id);
@@ -90,17 +76,12 @@ public class UsersController {
 
 	@PreAuthorize("hasRole('ROLE_MANAGER') or hasRole('ROLE_ADMIN')")
 	@GetMapping("/attend/{week}/{year}")
-	public List<Attendence> findAttendenceByYearandWeek(@PathVariable("week") DayOfWeek week,
+	public List<Attendence> findAttendenceByYearandWeek(@PathVariable("week") int week,
 			@PathVariable("year") int year) {
 		List<Attendence> ls = AService.findAll();
-		List<Attendence> list = new ArrayList<>();
-		for (int i = 0; i < ls.size(); i++) {
-			if (ls.get(i).getStartTime().getYear() == year) {
-				if (ls.get(i).getStartTime().getDayOfWeek() == week)
-					list.add(ls.get(i));
-			}
-		}
-		return list;
+		
+		
+		return AService.findLisByDayandYear(ls,week,year);
 	}
 
 	@PreAuthorize("hasRole('ROLE_MANAGER') or hasRole('ROLE_ADMIN')")

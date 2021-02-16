@@ -1,14 +1,12 @@
 package com.smile.tech.controller;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import static org.mockito.Mockito.when;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
@@ -18,13 +16,9 @@ import java.util.Set;
 import org.junit.Before;
 import org.junit.Test;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.web.servlet.MockMvc;
 
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -46,7 +40,6 @@ public class UsersControllerTests {
 	static LocalDateTime ldt = LocalDateTime.now();
 	private static final LocalDateTime CREATEDDATE = ldt;
 	private static final Set<Role> ROLE = null;
-
 
 	@InjectMocks
 	UsersController controller;
@@ -129,7 +122,7 @@ public class UsersControllerTests {
 	}
 
 	@Test
-	public void checkEntryByDate() throws Exception {
+	public void checkEntryforDate() throws Exception {
 		Attendence att = new Attendence();
 		att.setId(ATT_ID);
 		att.setStartTime(CREATEDDATE);
@@ -138,17 +131,15 @@ public class UsersControllerTests {
 
 		List<Attendence> list = new ArrayList<>();
 		list.add(att);
-		when(service2.findAll()).thenReturn(list);
-
-		LocalDate ld = LocalDate.now();
-
-		assertEquals(list.get(0).getStartTime().toLocalDate().toString(), ld.toString());
+		List<Attendence> list2 = new ArrayList<>();
+		when(service2.findListByDate(list2, "2021-02-15")).thenReturn(list2);
+		assertEquals(service2.findListByDate(list2, "2021-02-15"), list2);
 
 		System.out.println("Test 5 Complete");
 	}
 
 	@Test
-	public void checkEntryByMonth() throws Exception {
+	public void checkEntryforMonth() throws Exception {
 		Attendence att = new Attendence();
 		att.setId(ATT_ID);
 		att.setStartTime(CREATEDDATE);
@@ -157,18 +148,35 @@ public class UsersControllerTests {
 
 		List<Attendence> list = new ArrayList<>();
 		list.add(att);
-		when(service2.findAll()).thenReturn(list);
 
-		LocalDate ld = LocalDate.now();
+		List<Attendence> list2 = new ArrayList<>();
+		when(service2.findListByMonth(list, 2)).thenReturn(list2);
 
-		assertEquals(list.get(0).getStartTime().getMonthValue(), ld.getMonthValue());
+		assertEquals(service2.findListByMonth(list, 2), list2);
 
 		System.out.println("Test 6 Complete");
 	}
 
 	@Test
+	public void checkEntryforDayandYear() throws Exception {
+		Attendence att = new Attendence();
+		att.setId(ATT_ID);
+		att.setStartTime(CREATEDDATE);
+		att.setEndTime(CREATEDDATE);
+		att.setUserID(USER_ID);
+
+		List<Attendence> list = new ArrayList<>();
+		list.add(att);
+		List<Attendence> list2 = new ArrayList<>();
+
+		when(service2.findLisByDayandYear(list, 8, 2021)).thenReturn(list);
+		assertEquals(service2.findLisByDayandYear(list, 7, 2021), list2);
+
+		System.out.println("Test 9 Complete");
+	}
+
+	@Test
 	public void findAbsents() throws Exception {
-		LocalDate ld = LocalDate.now();
 
 		Users user = new Users();
 		user.setId(USER_ID);
@@ -186,20 +194,16 @@ public class UsersControllerTests {
 		List<Users> users = new ArrayList<>();
 		users.add(user);
 		List<Attendence> attendences = new ArrayList<>();
-		attendences.add(att);
-		when(service.findAll()).thenReturn(users);
-		when(service2.findAll()).thenReturn(attendences);
 
-		assertEquals(users.get(0).getCreatedDate().getMonthValue(), ld.getMonthValue());
-		assertNotEquals(users.get(0).getId(), attendences.get(0).getUserID());
+		when(service2.findAbsentListByMonth(users, 2)).thenReturn(attendences);
+
+		assertEquals(service2.findAbsentListByMonth(users, 2), attendences);
 
 		System.out.println("Test 7 Complete");
 	}
 
 	@Test
 	public void findPresents() throws Exception {
-		LocalDate ld = LocalDate.now();
-
 		Users user = new Users();
 		user.setId(USER_ID);
 		user.setUsername(USER_NAME);
@@ -216,12 +220,10 @@ public class UsersControllerTests {
 		List<Users> users = new ArrayList<>();
 		users.add(user);
 		List<Attendence> attendences = new ArrayList<>();
-		attendences.add(att);
-		when(service.findAll()).thenReturn(users);
-		when(service2.findAll()).thenReturn(attendences);
 
-		assertEquals(users.get(0).getCreatedDate().getMonthValue(), ld.getMonthValue());
-		assertEquals(users.get(0).getId(), attendences.get(0).getUserID());
+		when(service2.findPresentListByMonth(users, 2)).thenReturn(attendences);
+
+		assertEquals(service2.findPresentListByMonth(users, 2), attendences);
 
 		System.out.println("Test 8 Complete");
 	}
